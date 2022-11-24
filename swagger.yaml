@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: gpu-serverless-inference
+  description: |-
+    This is api documentation for gpu-serverless-inference class project.
+servers:
+  - url: https://testserver.com/function/
+paths:
+  /inference:
+    post:
+      tags:
+        - inference-task
+      summary: Run an inference task on the gpu.
+      description: Run an inferece task om the gpu and return its result. The data parameter in the request body depends upon the parameters of model. Can be an array of object(s) of an array of arrays.
+      operationId: updatePet
+      requestBody:
+        description: Inference task request.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/inference"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+
+        "404":
+          description: Model not found
+        "405":
+          description: Invalid model parameters.
+
+components:
+  schemas:
+    inference:
+      type: object
+      properties:
+        model:
+          type: string
+          example: "YOLO"
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Data"
+
+    Data:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/ArrayData"
+          - $ref: "#/components/schemas/ObjectData"
+    ArrayData:
+      type: array
+      items:
+        anyOf:
+          - $ref: "#/components/schemas/NumberArray"
+          - $ref: "#/components/schemas/StringArray"
+    ObjectData:
+      type: object
+      properties:
+        street:
+          type: string
+          example: 437 Lytton
+        city:
+          type: string
+          example: Palo Alto
+        state:
+          type: string
+          example: CA
+        zip:
+          type: string
+          example: "94301"
+    NumberArray:
+      type: array
+      items:
+        type: number
+        example:
+          - [-1, 1, 1.0, 1.5]
+    StringArray:
+      type: array
+      items:
+        type: string
+        example:
+          - ["A", "B", "C", "D"]
